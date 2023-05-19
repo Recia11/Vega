@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Deps: metasoarous/oz:2.0.0-alpha5">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/metasoarous/oz/2.0.0-alpha5/oz-2.0.0-alpha5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

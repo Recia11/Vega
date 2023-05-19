@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Deps: com.openhtmltopdf/openhtmltopdf-svg-support:1.0.8">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/openhtmltopdf/openhtmltopdf-svg-support/1.0.8/openhtmltopdf-svg-support-1.0.8.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

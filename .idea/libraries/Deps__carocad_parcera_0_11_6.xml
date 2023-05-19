@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Deps: carocad/parcera:0.11.6">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/carocad/parcera/0.11.6/parcera-0.11.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

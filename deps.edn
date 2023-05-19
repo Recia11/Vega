@@ -1,0 +1,14 @@
+{:paths ["." "src"]
+ :deps  {clj-http/clj-http     {:mvn/version "3.12.3"}
+         ;org.clojure/tools.cli {:mvn/version "1.0.214"}
+         org.clojure/data.json {:mvn/version "2.4.0"}
+         org.postgresql/postgresql {:mvn/version "42.2.10"}
+         com.github.seancorfield/next.jdbc {:mvn/version "1.3.847"}
+         ;org.clojure/clojure {:mvn/version "1.11.1"}
+         metasoarous/oz {:mvn/version "2.0.0-alpha5"}}} ;; for output to Vega
+
+
+
+
+
+

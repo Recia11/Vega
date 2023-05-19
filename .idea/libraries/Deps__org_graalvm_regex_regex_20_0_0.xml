@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Deps: org.graalvm.regex/regex:20.0.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/graalvm/regex/regex/20.0.0/regex-20.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Deps: org.apache.pdfbox/pdfbox:2.0.23">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/pdfbox/pdfbox/2.0.23/pdfbox-2.0.23.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

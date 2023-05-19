@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Deps: io.forward/yaml:1.0.9">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/forward/yaml/1.0.9/yaml-1.0.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

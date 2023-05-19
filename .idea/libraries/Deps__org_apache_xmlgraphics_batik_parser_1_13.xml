@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Deps: org.apache.xmlgraphics/batik-parser:1.13">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-parser/1.13/batik-parser-1.13.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
