@@ -6,7 +6,6 @@
             [next.jdbc.date-time]
             [clojure.core :as c]))
 
-(def auth-url "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=DPI81RV8MDEICUBQ")
 ;config file
 (def db-config
   {:dbtype "postgresql"
@@ -14,6 +13,24 @@
    :host "localhost"
    :user "reciaroopnarine"
    :password ""})
+
+(def db (jdbc/get-datasource db-config))
+
+(defn write-to-db [time-series db]
+  (map (fn [item] (let [symbol "IBM"
+                        date (key item)
+                        close (BigDecimal. (get (val item) "4. close"))]
+                    (jdbc/execute! db ["insert into stockdatatable (symbol,date,close)
+  values(?, ? , ?)" symbol date close]))) time-series))
+
+;;;;;;;;;;
+
+#_(def api-response (get-data auth-url))
+#_(def time-series (get api-response "Time Series (5min)"))
+#_(def updated-ts (update-keys (get api-response "Time Series (5min)")
+                             #(clojure.instant/read-instant-timestamp (clojure.string/replace % #" " "T"))))
+
+(def auth-url "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=DPI81RV8MDEICUBQ")
 
 ;error handling for url failure
 (defn try-get
@@ -24,32 +41,50 @@
          {:status :exception
           :body (.getMessage e)})))
 
-(defonce memo-try-get (memoize try-get))
-
 (defn get-data
   [url]
-  (let [response (memo-try-get url)
+  (let [response (try-get url)
         {:keys [status body]} response]
     (case status
       200 (json/read-str body)
       ;should retry if get a non-200 error, after max retry - error message should be descriptive or in log
       "Non-200 error")))
 
-(def api-response (get-data auth-url))
-(def time-series (get api-response "Time Series (5min)"))
-(def updated-ts (update-keys (get api-response "Time Series (5min)") #(clojure.instant/read-instant-timestamp (clojure.string/replace % #" " "T"))))
-(def db (jdbc/get-datasource db-config))
+(defn get-data-intraday
+  [symbol interval]
+  (let [url (str "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY" "&symbol=" symbol
+                 "&interval=" interval "&apikey=DPI81RV8MDEICUBQ")]
+    (get-data url)))
 
-(defn write-to-db [time-series db]
-  (map (fn [item] (let [symbol "IBM"
-                        date (key item)
-                        close (BigDecimal. (get (val item) "4. close"))]
-                    (jdbc/execute! db ["insert into stockdatatable (symbol,date,close)
-  values(?, ? , ?)" symbol date close]))) time-series))
+(defn get-data-weekly
+  [symbol]
+  (get-data (str "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol="
+                 symbol "&apikey=DPI81RV8MDEICUBQ")))
 
-(defn get-data-for-chart [updated-ts]
-  (map (fn [item] {:item "IBM" :time (key item) :quantity (BigDecimal. (get (val item) "4. close"))}) updated-ts))
+(def ibm-weekly (-> (slurp "data/ibm-weekly.edn") clojure.edn/read-string))
+(def tsla-weekly (-> (slurp "data/tsla-weekly.edn") clojure.edn/read-string))
 
+(defn response->vega-data-weekly
+  [response-edn stock-ticker]
+  (let [time-series (-> (get response-edn "Weekly Time Series")
+                        (update-keys #(clojure.instant/read-instant-timestamp (clojure.string/replace % #" " "T")))
+                        (update-vals #(Double/parseDouble (get % "4. close"))))]
+    (map (fn [[k v]] {:stock-ticker stock-ticker :timestamp k :close v}) time-series)))
+
+(def stock-price-line-plot
+  {:data     {:values
+              (concat (response->vega-data-weekly ibm-weekly "IBM")
+                      (response->vega-data-weekly tsla-weekly "TSLA"))}
+   :encoding {:x     {:field "timestamp" :type "temporal" :width 600}
+              :y     {:field "close" :type "quantitative"}
+              :color {:field "stock-ticker" :type "nominal"}}
+   :mark     "line"})
+
+(oz/view! stock-price-line-plot)
+
+;(oz/view! line-plot-stock)
+
+;;;;;;;;; Play data
 
 (defn play-data [& names]
   (for [n names
@@ -74,30 +109,18 @@
               :color {:field "item" :type "nominal"}}
    :mark "line"})
 
-(def line-plot-stock
-  {:data {:values (get-data-for-chart updated-ts)}
-   :encoding {:x {:field "time" :type "temporal"}
-              :y {:field "quantity" :type "quantitative"}}
-
-   :mark "line"})
-
 ;; Render the plot
 ;(oz/view! line-plot)
-;(oz/view! line-plot-stock)
 
 ;(def contour-plot (oz/load "examples/contour-lines.vega.json"))
 ;(oz/view! contour-plot :mode :vega)
 
 (def viz
   [:div
-   [:h1 "Stock Data"]
-   [:p "IBM"]
+   [:h1 "IBM vs TSLA"]
+   [:p "TSLA started way below IBM's stock price, then shot up into the stratosphere in the begining of 2020, and
+   currently trades slightly above IBM."]
    [:div {:style {:display "flex" :flex-direction "row"}}
-    [:vega-lite line-plot]]
+    [:vega-lite stock-price-line-plot {:width 600 :height 400}]]])
 
-   [:p "Tesla"]
-   [:vega stacked-bar]
-   [:h2 "The trend is showing that IBM stock price has gone up 400% over the last 10 years"]
-   [:p "But there is no guarantee that it will continue to rise"]])
-
-;(oz/view! viz)
+(oz/view! viz)
